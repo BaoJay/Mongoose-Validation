@@ -21,7 +21,7 @@ const productSchema = new mongoose.Schema({
   },
   price: {
     type: Number,
-    min: 0,
+    min: [0, "Price must be positive yahoooo"],
   },
   onSale: {
     type: Boolean,
@@ -38,17 +38,54 @@ const productSchema = new mongoose.Schema({
       default: 0,
     },
   },
+  size: {
+    type: String,
+    enum: ["S", "M", "L"],
+  },
 });
 
-// Define a Model in Mongoose
+// =========================================
+// // Define method for Schema
+// productSchema.methods.xinchao = function () {
+//   console.log("Hello!! Lại là mình đây!!");
+//   console.log(`- from ${this.name}`);
+// };
+
+// Toggle on/off a property (Sale) method
+productSchema.methods.toggleOnSale = function () {
+  this.onSale = !this.onSale;
+  return this.save();
+};
+
+// Add Category
+productSchema.methods.addCategory = function (newCat) {
+  this.categories.push(newCat);
+  return this.save();
+};
+
+// Define a Model &
+// connect Model-Schema in Mongoose
 const Product = mongoose.model("Product", productSchema);
 
+// Define a async function to call Schema/Model method
+const findProduct = async () => {
+  const foundProduct = await Product.findOne({ name: "Mountain Bike" });
+  console.log(foundProduct);
+  await foundProduct.toggleOnSale();
+  console.log(foundProduct);
+  await foundProduct.addCategory("Indoors");
+  console.log(foundProduct);
+};
+findProduct();
+
+// =========================================
 // // Define a instance in model
 // const bike = new Product({
-//   name: "Tire Pump",
+//   name: "Cycling Jersey",
 //   // This will turn to number
-//   price: 39.5,
+//   price: 29.5,
 //   categories: ["sycling"],
+//   size: "XL",
 // });
 
 // bike
@@ -61,15 +98,15 @@ const Product = mongoose.model("Product", productSchema);
 //     console.log("Oh no error!", err);
 //   });
 
-Product.findOneAndUpdate(
-  { name: "Tire Pump" },
-  { price: -99.99 },
-  { new: true, runValidators: true }
-)
-  .then((data) => {
-    console.log("It worked!!!");
-    console.log(data);
-  })
-  .catch((err) => {
-    console.log("Oh no error!", err);
-  });
+// Product.findOneAndUpdate(
+//   { name: "Tire Pump" },
+//   { price: -99.99 },
+//   { new: true, runValidators: true }
+// )
+//   .then((data) => {
+//     console.log("It worked!!!");
+//     console.log(data);
+//   })
+//   .catch((err) => {
+//     console.log("Oh no error!", err);
+//   });
