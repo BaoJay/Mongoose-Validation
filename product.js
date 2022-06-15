@@ -63,6 +63,11 @@ productSchema.methods.addCategory = function (newCat) {
   return this.save();
 };
 
+// Define a static function
+productSchema.statics.fireSale = function () {
+  return this.updateMany({}, { onSale: true, price: 0 });
+};
+
 // Define a Model &
 // connect Model-Schema in Mongoose
 const Product = mongoose.model("Product", productSchema);
@@ -76,7 +81,9 @@ const findProduct = async () => {
   await foundProduct.addCategory("Indoors");
   console.log(foundProduct);
 };
-findProduct();
+// findProduct();
+
+Product.fireSale().then((res) => console.log(res));
 
 // =========================================
 // // Define a instance in model
